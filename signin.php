@@ -1,16 +1,21 @@
 <?php
 session_start();
-
+require_once("../stock2025/php/Admin.php");
+require_once("../stock2025/php/Client.php");
 // Traitement de la connexion
 if ($_POST) {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     $user_type = $_POST['user_type'] ?? '';
-    
+
     // Logique de vérification des identifiants (à adapter selon votre base de données)
+
     if ($user_type === 'admin') {
         // Vérification pour admin
-        if ($username === 'benhima@email.com' && $password === '0000') {
+
+        $admin = Admin::authenticateSimple($username, $password);
+
+        if ($admin) {
             $_SESSION['admin'] = true;
             $_SESSION['user_type'] = 'admin';
             $_SESSION['username'] = $username;
@@ -19,15 +24,18 @@ if ($_POST) {
         }
     } elseif ($user_type === 'client') {
         // Vérification pour client
-        if ($username === 'client' && $password === 'client123') {
+
+        $client = Client::authenticateSimple($username, $password);
+
+        if ($client) {
             $_SESSION['client'] = true;
             $_SESSION['user_type'] = 'client';
             $_SESSION['username'] = $username;
-            header("Location: client_dashboard.php"); // Redirection vers le tableau de bord client
+            header("Location: client/index.php"); // Redirection vers le tableau de bord client
             exit();
         }
     }
-    
+
     $error_message = "Identifiants incorrects ou type d'utilisateur invalide.";
 }
 ?>

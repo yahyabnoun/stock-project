@@ -26,6 +26,29 @@ class Admin extends Personne {
         }
     }
 
+
+    // Méthode d'authentification simple (si mots de passe en texte brut)
+    public static function authenticateSimple($email, $password) {
+        try {
+            $pdo = Dao::getPDO();
+            
+            $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = :email");
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            
+            $admin_data = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($admin_data && $password === $admin_data['mdp']) {
+                return true;
+            }
+            
+            return false;
+        } catch (PDOException $e) {
+            error_log("Admin authentication error: " . $e->getMessage());
+            return false;
+        }
+    }
+    
     // ajouter un nouveau admin
     public function AjouterAdmin($nom_de_class) {
         Dao::ajouterAdmin($this->nom, $this->prenom, $this->adr, $this->tele, $this->email, $this->mdp, $this->image, $nom_de_class);
