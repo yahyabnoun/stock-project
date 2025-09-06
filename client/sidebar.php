@@ -5,16 +5,19 @@
             <ul>
                 <li>
                     <a href="index.php" class="<?= $active[0]; ?>"><img src="../assets/img/icons/dashboard.svg"
-                            alt="img"><span>
-                            Dashboard</span> </a>
+                            alt="img"><span>Dashboard</span></a>
                 </li>
-                <li class="submenu">
-                    <a href="javascript:void(0);"><img src="../assets/img/icons/quotation1.svg" alt="img"><span>
-                            Category</span> <span class="menu-arrow"></span></a>
-                    <ul>
-                        <li><a href="categorylist.php" class="<?= $active[3]; ?>">Category List</a></li>
-                        <li><a href="addcategory.php" class="<?= $active[4]; ?>">Add Category</a></li>
-                    </ul>
+                <li>
+                    <a href="products.php" class="<?= $active[1]; ?>"><img src="../assets/img/icons/product.svg"
+                            alt="img"><span>Products</span></a>
+                </li>
+                <li>
+                    <a href="cart.php" class="<?= $active[2]; ?>"><img src="../assets/img/icons/shopping-cart.png"
+                            alt="img"><span>Shopping Cart</span></a>
+                </li>
+                <li>
+                    <a href="orders.php" class="<?= $active[3]; ?>"><img src="../assets/img/icons/order.png"
+                            alt="img"><span>My Orders</span></a>
                 </li>
             </ul>
         </div>
