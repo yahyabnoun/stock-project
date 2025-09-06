@@ -168,10 +168,10 @@ $active = array(0, 0, 0, "active");
                                                 onclick="viewOrderDetails('<?= $order['num_com'] ?>')">
                                             <i class="fas fa-eye"></i> View Details
                                         </button>
-                                        <button class="btn btn-outline-secondary btn-sm" 
+                                        <!-- <button class="btn btn-outline-secondary btn-sm" 
                                                 onclick="printOrder('<?= $order['num_com'] ?>')">
                                             <i class="fas fa-print"></i> Print
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </div>
                             </div>
