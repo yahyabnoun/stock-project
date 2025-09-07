@@ -17,6 +17,7 @@ session_start();
     $almost_expired_products = Product::afficherExepiredPr();
     $all_sales = Sale::topSales();
     $all_purchases = Purchase::displayAllPur();
+    $total_profit = Sale::totalProfit();
     $total_all_sales = 0;
     foreach ($all_sales as $item) {
         $total_all_sales += $item['total'];
@@ -102,7 +103,7 @@ session_start();
                                 <span><img src="assets/img/icons/dash3.svg" alt="img"></span>
                             </div>
                             <div class="dash-widgetcontent">
-                                <h5><span class="counters" data-count="<?= $total_all_sales - $total_all_pur ?>"><?= $total_all_sales - $total_all_pur ?>DH</span></h5>
+                                <h5><span class="counters" data-count="<?= $total_profit ?>"><?= $total_profit ?>DH</span></h5>
                                 <h6>Total Profit (DH)</h6>
                             </div>
                         </div>

@@ -1,5 +1,11 @@
 <?php
 session_start();
+// Normalize admin session data to avoid accessing array offsets on bool/null
+$adminData = (isset($_SESSION['admin']) && is_array($_SESSION['admin'])) ? $_SESSION['admin'] : null;
+$adminImage = ($adminData && !empty($adminData['image'])) ? $adminData['image'] : 'assets/img/img-01.jpg';
+$adminNom = $adminData['nom'] ?? '';
+$adminPrenom = $adminData['prenom'] ?? '';
+$adminId = $adminData['id'] ?? '';
 if (isset($_GET['id'])) {
     require_once("../stock2025/php/Admin.php");
     extract($_GET);
@@ -13,6 +19,14 @@ if (isset($_GET['id'])) {
         display: block;
 
     }
+    /* Dropdown overrides for admin menu */
+    .dropdown-menu.menu-drop-user{left:auto;right:0;min-width:260px;padding:12px;border:1px solid #eee;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+    .profileset{display:flex;align-items:center;gap:12px;}
+    .user-img img{width:40px;height:40px;object-fit:cover;border-radius:50%;}
+    .profilesets h6{margin:0;font-size:14px;font-weight:600;}
+    .profilesets h5{margin:2px 0 0;font-size:12px;color:#6c757d;}
+    .menu-drop-user .dropdown-item{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:14px;}
+    .menu-drop-user hr{margin:8px 0;}
     </style>
     
 
@@ -44,20 +58,20 @@ if (isset($_GET['id'])) {
         <li class="nav-item dropdown has-arrow main-drop">
             <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
                 <span class="user-img">
-                    <img src="<?= $_SESSION['admin']['image'] ?>" alt="">
+                    <img style="object-fit:cover;margin-top:0px;" src="<?= htmlspecialchars($adminImage) ?>" alt="">
                     <span class="status online"></span>
                 </span>
             </a>
-            <div class="dropdown-menu menu-drop-user">
+            <div class="dropdown-menu dropdown-menu-end menu-drop-user">
                 <div class="profilename">
                     <div class="profileset">
                         <span class="user-img">
-                            <img src="<?= $_SESSION['admin']['image'] ?>" alt="">
+                            <img src="<?= htmlspecialchars($adminImage) ?>" alt="">
                             <span class="status online"></span>
                         </span>
                         <div class="profilesets">
                             <h6>
-                                <?= $_SESSION['admin']['nom'] . " " . $_SESSION['admin']['prenom'] ?>
+                                <?= htmlspecialchars(trim($adminNom . " " . $adminPrenom)) ?>
                             </h6>
                             <h5>Admin</h5>
                         </div>
@@ -66,15 +80,13 @@ if (isset($_GET['id'])) {
                     <a class="dropdown-item" href="profile.php"> <i class="me-2" data-feather="user"></i> My
                         Profile</a>
                     <hr class="m-0">
-                    <a class="dropdown-item logout pb-0" href="header.php?id=<?= $_SESSION['admin']['id'] ?>">
-                        <img style="width:20px;" src="assets/img/icons/delete.svg" -->
-                        <class="me-2" alt="img">
-                            Delete my account
+                    <a class="dropdown-item logout pb-0" href="header.php?id=<?= htmlspecialchars($adminId) ?>">
+                        <img style="width:20px;" src="assets/img/icons/delete.svg" class="me-2" alt="delete">
+                        Delete my account
                     </a>
                     <a class="dropdown-item logout pb-0" href="logout.php">
-                        <img src="assets/img/icons/log-out.svg" -->
-                        <class="me-2" alt="img">
-                            Logout
+                        <img style="width:20px;" src="assets/img/icons/log-out.svg" class="me-2" alt="logout">
+                        Logout
                     </a>
                 </div>
             </div>

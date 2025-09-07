@@ -36,4 +36,8 @@ class Sale {
     public static function topSales() {
         return Dao::topSales();
     }
+
+    public static function totalProfit() {
+        return Dao::totalProfit();
+    }
 }

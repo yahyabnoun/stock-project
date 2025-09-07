@@ -449,4 +449,14 @@ GROUP BY num_com
 ORDER BY total DESC;";
         return $pdo->query($sql)->fetchAll();
     }
+
+    // Total profit across all sales: sum(qte_pr * (prix_vente - prix_achat))
+    public static function totalProfit() {
+        $pdo = Dao::getPDO();
+        $sql = "SELECT COALESCE(SUM(cp.qte_pr * (cp.prix_vente - p.prix_achat)), 0) AS profit
+                FROM contient_pr cp
+                JOIN produit p USING (num_pr);";
+        $stmt = $pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+        return (float)($stmt['profit'] ?? 0);
+    }
 }

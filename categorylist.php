@@ -10,6 +10,8 @@ session_start();
     Categorie::supprimerCat($id_cat);
   }
   $cats = Categorie::afficher("Categorie");
+  $adminData = (isset($_SESSION['admin']) && is_array($_SESSION['admin'])) ? $_SESSION['admin'] : null;
+  $createdBy = htmlspecialchars(trim(($adminData['nom'] ?? '') . ' ' . ($adminData['prenom'] ?? '')));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -99,7 +101,7 @@ session_start();
                       <?= $cats[$i]['desc_cat'] ?>
                     </td>
                     <td>
-                      <?= $_SESSION['admin']['nom'] . " " . $_SESSION['admin']['prenom'] ?>
+                      <?= $createdBy ?>
                     </td>
                     <td>
                       <a class="me-3" href="editcategory.php?id_cat=<?= $cats[$i]['id_cat'] ?>">
