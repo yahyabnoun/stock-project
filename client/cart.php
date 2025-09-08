@@ -134,16 +134,16 @@ $active = array(0, 0, "active", 0);
                             <h5 class="mb-3">Order Summary</h5>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span id="subtotal">$0.00</span>
+                                <span id="subtotal">DH 0.00</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax (10%):</span>
-                                <span id="tax">$0.00</span>
+                                <span id="tax">DH 0.00</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
-                                <strong id="total">$0.00</strong>
+                                <strong id="total">DH 0.00</strong>
                             </div>
                             <button id="checkout-btn" class="btn btn-success w-100" onclick="proceedToCheckout()" disabled>
                                 <i class="fas fa-credit-card"></i> Proceed to Checkout
@@ -203,7 +203,7 @@ $active = array(0, 0, "active", 0);
                             <small class="text-muted">Product ID: ${item.id}</small>
                         </div>
                         <div class="col-md-2">
-                            <span class="fw-bold">$${item.price.toFixed(2)}</span>
+                            <span class="fw-bold">${item.price.toFixed(2)} DH</span>
                         </div>
                         <div class="col-md-3">
                             <div class="quantity-controls">
@@ -270,9 +270,9 @@ $active = array(0, 0, "active", 0);
             const tax = subtotal * 0.1; // 10% tax
             const total = subtotal + tax;
             
-            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
-            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('subtotal').textContent = `DH ${subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `DH ${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `DH ${total.toFixed(2)}`;
             
             const checkoutBtn = document.getElementById('checkout-btn');
             checkoutBtn.disabled = cart.length === 0;

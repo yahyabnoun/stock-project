@@ -318,7 +318,7 @@ $active = array(0, "active", 0, 0);
                                         </p>
                                         <div class="mt-auto">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span class="product-price">$<?= number_format($product['prix_uni'], 2) ?></span>
+                                                <span class="product-price"><?= number_format($product['prix_uni'], 2) ?> DH</span>
                                                 <small class="text-muted">Stock: <?= $product['qte_stock'] ?></small>
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center mb-3">

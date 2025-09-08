@@ -159,7 +159,7 @@ $active = array(0, 0, 0, "active");
                                         </div>
                                         <div class="col-md-6">
                                             <small class="text-muted">Total:</small>
-                                            <div class="fw-bold text-success">$<?= number_format($order['total_amount'] * 1.1, 2) ?></div>
+                                            <div class="fw-bold text-success"><?= number_format($order['total_amount'] * 1.1, 2) ?> DH</div>
                                         </div>
                                     </div>
                                     

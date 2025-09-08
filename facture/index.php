@@ -359,7 +359,7 @@
                               vertical-align: top;
                               padding: 10px 0;
                             " align="right">
-                            $299.95
+                            299.95 DH
                           </td>
                         </tr>
                         <tr>
@@ -404,7 +404,7 @@
                               vertical-align: top;
                               padding: 10px 0;
                             " align="right">
-                            $29.95
+                            29.95 DH
                           </td>
                         </tr>
                         <tr>
@@ -455,7 +455,7 @@
                               vertical-align: top;
                               text-align: right;
                             ">
-                            <strong>$344.90</strong>
+                            <strong>344.90 DH</strong>
                           </td>
                         </tr>
                       </tbody>

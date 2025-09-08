@@ -174,7 +174,7 @@ $active = array(0, 0, 0, 0);
                                             <span class="text-muted">Qty: <?= $item['qte_pr'] ?></span>
                                         </div>
                                         <div class="col-md-2">
-                                            <span class="fw-bold">$<?= number_format($item['prix_vente'] * $item['qte_pr'], 2) ?></span>
+                                            <span class="fw-bold"><?= number_format($item['prix_vente'] * $item['qte_pr'], 2) ?> DH</span>
                                         </div>
                                     </div>
                                 </div>
@@ -198,16 +198,16 @@ $active = array(0, 0, 0, 0);
                             
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span>$<?= number_format($subtotal, 2) ?></span>
+                                <span><?= number_format($subtotal, 2) ?> DH</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax (10%):</span>
-                                <span>$<?= number_format($tax, 2) ?></span>
+                                <span><?= number_format($tax, 2) ?> DH</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
-                                <strong>$<?= number_format($total, 2) ?></strong>
+                                <strong><?= number_format($total, 2) ?> DH</strong>
                             </div>
                             
                             <div class="d-grid gap-2">

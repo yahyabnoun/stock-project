@@ -178,7 +178,7 @@ $active = array(0, 0, 0, 0);
                                                 <h6 class="mb-1"><?= htmlspecialchars($item['name']) ?></h6>
                                                 <small class="text-muted">Qty: <?= $item['quantity'] ?></small>
                                             </div>
-                                            <span class="fw-bold">$<?= number_format($item['price'] * $item['quantity'], 2) ?></span>
+                                            <span class="fw-bold"><?= number_format($item['price'] * $item['quantity'], 2) ?> DH</span>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -189,16 +189,16 @@ $active = array(0, 0, 0, 0);
                             <!-- Totals -->
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span>$<?= number_format($subtotal, 2) ?></span>
+                                <span><?= number_format($subtotal, 2) ?> DH</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax (10%):</span>
-                                <span>$<?= number_format($tax, 2) ?></span>
+                                <span><?= number_format($tax, 2) ?> DH</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
-                                <strong>$<?= number_format($total, 2) ?></strong>
+                                <strong><?= number_format($total, 2) ?> DH</strong>
                             </div>
                             
                             <button type="button" class="btn btn-success w-100" onclick="placeOrder()">

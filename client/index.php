@@ -171,7 +171,7 @@ $active = array("active", 0, 0, 0);
                         <div class="stats-card success">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h3 class="mb-1">$<?= number_format($total_spent * 1.1, 2) ?></h3>
+                                    <h3 class="mb-1"><?= number_format($total_spent * 1.1, 2) ?> DH</h3>
                                     <p class="mb-0">Total Spent</p>
                                 </div>
                                 <i class="fas fa-dollar-sign stats-icon"></i>
@@ -238,7 +238,7 @@ $active = array("active", 0, 0, 0);
                                                     <small class="text-muted"><?= $order['item_count'] ?> item(s)</small>
                                                 </div>
                                                 <div class="col-md-2 text-end">
-                                                    <strong>$<?= number_format($order['total_amount'] * 1.1, 2) ?></strong>
+                                                    <strong><?= number_format($order['total_amount'] * 1.1, 2) ?> DH</strong>
                                                 </div>
                                             </div>
                                         </div>

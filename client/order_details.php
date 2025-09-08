@@ -102,8 +102,8 @@ if (!$order_details) {
                             </div>
                         </td>
                         <td><?= $item['qte_pr'] ?></td>
-                        <td>$<?= number_format($item['prix_vente'], 2) ?></td>
-                        <td>$<?= number_format($item_total, 2) ?></td>
+                        <td><?= number_format($item['prix_vente'], 2) ?> DH</td>
+                        <td><?= number_format($item_total, 2) ?> DH</td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -120,16 +120,16 @@ if (!$order_details) {
             <h6><i class="fas fa-calculator"></i> Order Summary</h6>
             <div class="d-flex justify-content-between">
                 <span>Subtotal:</span>
-                <span>$<?= number_format($subtotal, 2) ?></span>
+                <span><?= number_format($subtotal, 2) ?> DH</span>
             </div>
             <div class="d-flex justify-content-between">
                 <span>Tax (10%):</span>
-                <span>$<?= number_format($subtotal * 0.1, 2) ?></span>
+                <span><?= number_format($subtotal * 0.1, 2) ?> DH</span>
             </div>
             <hr>
             <div class="d-flex justify-content-between fw-bold">
                 <span>Total:</span>
-                <span>$<?= number_format($subtotal * 1.1, 2) ?></span>
+                <span><?= number_format($subtotal * 1.1, 2) ?> DH</span>
             </div>
         </div>
     </div>
