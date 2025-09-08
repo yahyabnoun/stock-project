@@ -173,7 +173,7 @@ class Dao {
 
     public static function addPr($num_pr, $id_cat, $id_marque, $lib_pr, $desc_pr, $prix_uni, $prix_achat, $qte_stock, $image) {
         $pdo = Dao::getPDO();
-        $sql = "INSERT INTO produit VALUES (?,?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO produit (num_pr, id_cat, id_marque, lib_pr, desc_pr, prix_uni, prix_achat, qte_stock, pr_image) VALUES (?,?,?,?,?,?,?,?,?)";
         $pdo->prepare($sql)->execute([$num_pr, $id_cat, $id_marque, $lib_pr, $desc_pr, $prix_uni, $prix_achat, $qte_stock, $image]);
     }
 

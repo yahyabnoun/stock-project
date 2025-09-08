@@ -20,8 +20,8 @@ class Marque {
         $marque = Marque::afficherMarque($id_marque);
         Dao::supprimerMarque($id_marque);
         $old_img = $marque['br_image'];
-        if (!unlink($old_img)) {
-            exit("<h3> Failed to delete image!</h3>");
+        if ($old_img && file_exists($old_img) && is_file($old_img)) {
+            @unlink($old_img);
         }
     }
 
@@ -37,8 +37,8 @@ class Marque {
 
     // supprimer une image d'une marque 
     public static function unlinkFile($old_img) {
-        if (!unlink($old_img)) {
-            exit("<h3> Failed to delete image!</h3>");
+        if ($old_img && file_exists($old_img) && is_file($old_img)) {
+            @unlink($old_img);
         }
     }
 

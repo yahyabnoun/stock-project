@@ -11,6 +11,18 @@ session_start();
   $active = array(0, 0, 0, 0, 0, 0, "active", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   if (isset($_POST['add'])) {
     extract($_POST);
+    // Basic server-side validation and casting for numeric fields
+    $id_cat = isset($id_cat) && $id_cat !== '' ? (int)$id_cat : null;
+    $id_marque = isset($id_marque) && $id_marque !== '' ? (int)$id_marque : null;
+    $qte_stock = isset($qte_stock) && $qte_stock !== '' ? (int)$qte_stock : null;
+    $prix_achat = isset($prix_achat) && $prix_achat !== '' ? (float)str_replace(',', '.', $prix_achat) : null;
+    $prix_uni = isset($prix_uni) && $prix_uni !== '' ? (float)str_replace(',', '.', $prix_uni) : null;
+
+    // Guard against invalid numeric inputs
+    if ($id_cat === null || $id_marque === null || $qte_stock === null || $prix_achat === null || $prix_uni === null) {
+      exit('<h3> Please fill valid numeric values for Category, Brand, Quantity, Purchase and Unit prices.</h3>');
+    }
+
     $filename = $_FILES["image"]["name"];
     $tempname = $_FILES["image"]["tmp_name"];
     $image = "./image/product/" . $filename;

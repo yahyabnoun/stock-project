@@ -23,11 +23,11 @@ session_start();
       // var_dump($tempname);
 
       if (move_uploaded_file($tempname, $image)) {
-        if (unlink($old_image)) {
-          Supplier::modifier($id, $nom, $prenom, $adr, $tele, $email, $image, "fournisseur");
-        } else {
-          exit("<h3> Failed to delete image!</h3>");
+        $oldPath = $old_image;
+        if ($oldPath && file_exists($oldPath) && is_file($oldPath)) {
+          @unlink($oldPath);
         }
+        Supplier::modifier($id, $nom, $prenom, $adr, $tele, $email, $image, "fournisseur");
       } else {
         exit("<h3> Failed to upload image!</h3>");
       }

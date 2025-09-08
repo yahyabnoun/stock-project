@@ -288,7 +288,7 @@ $active = array("active", 0, 0, 0);
                                     <p><strong>Name:</strong> <?= htmlspecialchars($client_info['prenom'] . ' ' . $client_info['nom']) ?></p>
                                     <p><strong>Email:</strong> <?= htmlspecialchars($client_info['email']) ?></p>
                                     <p><strong>Phone:</strong> <?= htmlspecialchars($client_info['tele']) ?></p>
-                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <a href="profile.php" class="btn btn-outline-primary btn-sm">
                                         <i class="fas fa-edit"></i> Edit Profile
                                     </a>
                                 </div>

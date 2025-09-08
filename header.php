@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 // Normalize admin session data to avoid accessing array offsets on bool/null
 $adminData = (isset($_SESSION['admin']) && is_array($_SESSION['admin'])) ? $_SESSION['admin'] : null;
 $adminImage = ($adminData && !empty($adminData['image'])) ? $adminData['image'] : 'assets/img/img-01.jpg';

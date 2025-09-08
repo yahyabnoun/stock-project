@@ -13,10 +13,10 @@ if ($_POST) {
     if ($user_type === 'admin') {
         // Vérification pour admin
 
-        $admin = Admin::authenticateSimple($username, $password);
+        $admin_result = Admin::estAdmin($username, $password);
 
-        if ($admin) {
-            $_SESSION['admin'] = true;
+        if (is_array($admin_result)) {
+            $_SESSION['admin'] = $admin_result;
             $_SESSION['user_type'] = 'admin';
             $_SESSION['username'] = $username;
             header("Location: index.php"); // Redirection vers le tableau de bord admin

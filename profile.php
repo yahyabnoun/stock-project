@@ -1,10 +1,21 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <?php if (isset($_SESSION['admin'])): ?>
 <?php
     require_once("../stock2025/php/Admin.php");
     $admins = Admin::afficher("admin");
+    
+    // If session admin is not an array, try to reload it from database
+    if (!is_array($_SESSION['admin']) && isset($_SESSION['username'])) {
+        require_once("../stock2025/php/Dao.php");
+        $admin_result = Dao::adminExiste($_SESSION['username']);
+        if ($admin_result) {
+            $_SESSION['admin'] = $admin_result;
+        }
+    }
 
     if (isset($_POST['submit_data'])) {
         extract($_POST);
@@ -26,7 +37,7 @@ session_start();
             $tempname = $_FILES["image"]["tmp_name"];
             $new_image = "./image/admin/" . $filename;
             // recuper l' ancienne image
-            $old_image = $_SESSION['admin']['image'];
+            $old_image = is_array($_SESSION['admin']) ? $_SESSION['admin']['image'] : '';
 
             if (move_uploaded_file($tempname, $new_image)) {
                 Admin::modifierImageAdmin($id, $new_image);
@@ -37,7 +48,9 @@ session_start();
             //if (!unlink($old_image)){exit("<h3> Failed to delete image!</h3>");}//
 
             // changer le valeurs de la session par les nouvelles valeurs
-            $_SESSION['admin'] = Admin::estAdmin($_SESSION['admin']['email'], $_SESSION['admin']['mdp']);
+            if (is_array($_SESSION['admin'])) {
+                $_SESSION['admin'] = Admin::estAdmin($_SESSION['admin']['email'], $_SESSION['admin']['mdp']);
+            }
         }
     }
 
@@ -97,11 +110,11 @@ session_start();
                             <div class="profile-top">
                                 <div class="profile-content">
                                     <div class="profile-contentimg">
-                                        <img src="<?= $_SESSION['admin']['image'] ?>" alt="img" id="blah">
+                                        <img src="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['image'] : 'assets/img/icons/user-placeholder.jpg' ?>" alt="img" id="blah">
                                         <div class="profileupload">
-                                            <input type="hidden" value="<?= $_SESSION['admin']['id'] ?>" name="id">
+                                            <input type="hidden" value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['id'] : '' ?>" name="id">
                                             <input type="file" id="imgInp" name="image"
-                                                value="<?= $_SESSION['admin']['image'] ?>">
+                                                value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['image'] : '' ?>">
                                             <a href="javascript:void(0);">
                                                 <img src="assets/img/icons/edit-set.svg" alt="img">
                                             </a>
@@ -109,7 +122,7 @@ session_start();
                                     </div>
                                     <div class="profile-contentname">
                                         <h2>
-                                            <?= $_SESSION['admin']['prenom'] . " " . $_SESSION['admin']['nom'] ?>
+                                            <?= is_array($_SESSION['admin']) ? $_SESSION['admin']['prenom'] . " " . $_SESSION['admin']['nom'] : 'Admin User' ?>
                                         </h2>
                                         <h4>Updates Your Photo and Personal Details.</h4>
                                     </div>
@@ -130,15 +143,15 @@ session_start();
                             <div class="col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <label>First Name</label>
-                                    <input type="hidden" value="<?= $_SESSION['admin']['id'] ?>" name="id">
-                                    <input type="text" placeholder="William" value="<?= $_SESSION['admin']['prenom'] ?>"
+                                    <input type="hidden" value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['id'] : '' ?>" name="id">
+                                    <input type="text" placeholder="William" value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['prenom'] : '' ?>"
                                         name="prenom">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <label>Last Name</label>
-                                    <input type="text" placeholder="Castilo" value="<?= $_SESSION['admin']['nom'] ?>"
+                                    <input type="text" placeholder="Castilo" value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['nom'] : '' ?>"
                                         name="nom">
                                 </div>
                             </div>
@@ -146,7 +159,7 @@ session_start();
                                 <div class="form-group">
                                     <label>Email</label>
                                     <input type="text" placeholder="william@example.com"
-                                        value="<?= $_SESSION['admin']['email'] ?>" name="email">
+                                        value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['email'] : '' ?>" name="email">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-sm-12">
@@ -154,7 +167,7 @@ session_start();
                                     <label>Password</label>
                                     <div class="pass-group">
                                         <input type="password" class=" pass-input"
-                                            value="<?= $_SESSION['admin']['mdp'] ?>" name="mdp">
+                                            value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['mdp'] : '' ?>" name="mdp">
                                         <span class="fas toggle-password fa-eye-slash"></span>
                                     </div>
                                 </div>
@@ -163,7 +176,7 @@ session_start();
                                 <div class="form-group">
                                     <label>Phone</label>
                                     <input type="text" placeholder="+212 766032618"
-                                        value="<?= $_SESSION['admin']['tele'] ?>" name="tele">
+                                        value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['tele'] : '' ?>" name="tele">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-sm-12">
@@ -172,7 +185,7 @@ session_start();
                                         Adress
                                     </label>
                                     <input type="text" placeholder=" Robert Robertson, 1234 NW Bobcat Lane"
-                                        value="<?= $_SESSION['admin']['adr'] ?> " name="adr">
+                                        value="<?= is_array($_SESSION['admin']) ? $_SESSION['admin']['adr'] : '' ?> " name="adr">
                                 </div>
                             </div>
                             <div class="col-12">

@@ -23,14 +23,14 @@ session_start();
       // var_dump($tempname);
 
       if (move_uploaded_file($tempname, $image)) {
-        if (unlink($old_image)) {
-          Categorie::modifierCat($id_cat, $lib_cat, $desc_cat, $image);
-          $cat = Categorie::affichetCat($id_cat);
-        } else {
-          exit("<h3> Failed to delete image!</h3>");
+        $oldPath = $old_image;
+        if ($oldPath && file_exists($oldPath) && is_file($oldPath)) {
+          @unlink($oldPath);
         }
+        Categorie::modifierCat($id_cat, $lib_cat, $desc_cat, $image);
+        $cat = Categorie::affichetCat($id_cat);
       } else {
-        exit("<h3> Failed to uploade image!</h3>");
+        exit("<h3> Failed to upload image!</h3>");
       }
     }
   }
