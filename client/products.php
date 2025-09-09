@@ -331,7 +331,7 @@ $active = array(0, "active", 0, 0);
                                             </div>
                                             <?php if ($product['qte_stock'] > 0): ?>
                                                 <button class="btn btn-primary add-to-cart-btn" 
-                                                        onclick="addToCart('<?= $product['num_pr'] ?>', '<?= htmlspecialchars($product['lib_pr']) ?>', <?= $product['prix_uni'] ?>, <?= $product['qte_stock'] ?>)">
+                                                        onclick="addToCart('<?= $product['num_pr'] ?>', '<?= htmlspecialchars($product['lib_pr'], ENT_QUOTES) ?>', <?= $product['prix_uni'] ?>, <?= $product['qte_stock'] ?>, '<?= htmlspecialchars('../' . ltrim($product['pr_image'], './'), ENT_QUOTES) ?>')">
                                                     <i class="fas fa-cart-plus"></i> Add to Cart
                                                 </button>
                                             <?php else: ?>
@@ -439,7 +439,7 @@ $active = array(0, "active", 0, 0);
             }
         });
 
-        function addToCart(productId, productName, price, stock) {
+        function addToCart(productId, productName, price, stock, imageUrl) {
             // Get current cart from localStorage
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             
@@ -459,7 +459,8 @@ $active = array(0, "active", 0, 0);
                     name: productName,
                     price: price,
                     quantity: 1,
-                    stock: stock
+                    stock: stock,
+                    image: imageUrl
                 });
                 
             }

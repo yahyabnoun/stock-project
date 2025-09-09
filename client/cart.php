@@ -196,7 +196,7 @@ $active = array(0, 0, "active", 0);
                 cartItem.innerHTML = `
                     <div class="row align-items-center">
                         <div class="col-md-2">
-                            <img src="../assets/img/product-placeholder.jpg" class="product-image" alt="${item.name}">
+                            <img src="${item.image ? item.image : '../assets/img/product-placeholder.jpg'}" class="product-image" alt="${item.name}">
                         </div>
                         <div class="col-md-4">
                             <h6 class="mb-1">${item.name}</h6>
