@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Set timezone to Casablanca, Morocco
+date_default_timezone_set('Africa/Casablanca');
+
 // Check if client is logged in
 if (!isset($_SESSION['client']) || $_SESSION['user_type'] !== 'client') {
     http_response_code(401);

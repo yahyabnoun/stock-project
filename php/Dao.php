@@ -395,6 +395,68 @@ GROUP BY num_com;";
         return $pdo->query($sql)->fetchAll();
     }
 
+    public static function displayRecentSales() {
+        $pdo = Dao::getPDO();
+        $sql = "SELECT SUM(`qte_pr` * prix_vente) as total, num_pr, num_com, nom, prenom, image, date_com, nom,prenom,num_com
+FROM (((contient_pr NATURAL JOIN produit) NATURAL JOIN commande) NATURAL JOIN client)
+WHERE id_cli = id
+GROUP BY num_com
+ORDER BY date_com DESC;";
+        return $pdo->query($sql)->fetchAll();
+    }
+
+    public static function searchSales($searchTerm = '', $dateFrom = '', $dateTo = '', $amountFrom = '', $amountTo = '') {
+        $pdo = Dao::getPDO();
+        
+        $sql = "SELECT SUM(`qte_pr` * prix_vente) as total, num_pr, num_com, nom, prenom, image, date_com, nom,prenom,num_com
+FROM (((contient_pr NATURAL JOIN produit) NATURAL JOIN commande) NATURAL JOIN client)
+WHERE id_cli = id";
+        
+        $params = [];
+        
+        // Add search term filter
+        if (!empty($searchTerm)) {
+            $sql .= " AND (num_com LIKE ? OR nom LIKE ? OR prenom LIKE ? OR CONCAT(nom, ' ', prenom) LIKE ?)";
+            $searchPattern = "%$searchTerm%";
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+        }
+        
+        // Add date range filter
+        if (!empty($dateFrom)) {
+            $sql .= " AND DATE(date_com) >= ?";
+            $params[] = $dateFrom;
+        }
+        
+        if (!empty($dateTo)) {
+            $sql .= " AND DATE(date_com) <= ?";
+            $params[] = $dateTo;
+        }
+        
+        $sql .= " GROUP BY num_com";
+        
+        // Add amount range filter (using HAVING clause after GROUP BY)
+        if (!empty($amountFrom) || !empty($amountTo)) {
+            $sql .= " HAVING 1=1";
+            if (!empty($amountFrom)) {
+                $sql .= " AND total >= ?";
+                $params[] = $amountFrom;
+            }
+            if (!empty($amountTo)) {
+                $sql .= " AND total <= ?";
+                $params[] = $amountTo;
+            }
+        }
+        
+        $sql .= " ORDER BY date_com DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
     public static function deleteSale($num_com) {
         $pdo = Dao::getPDO();
         $sql = "SELECT num_pr, qte_pr FROM contient_pr  WHERE num_com=?";

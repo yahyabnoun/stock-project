@@ -26,6 +26,14 @@ class Sale {
         return Dao::displayAllSales();
     }
 
+    public static function displayRecentSales() {
+        return Dao::displayRecentSales();
+    }
+
+    public static function searchSales($searchTerm = '', $dateFrom = '', $dateTo = '', $amountFrom = '', $amountTo = '') {
+        return Dao::searchSales($searchTerm, $dateFrom, $dateTo, $amountFrom, $amountTo);
+    }
+
     public static function deleteSale($num_com) {
         Dao::deleteSale($num_com);
     }

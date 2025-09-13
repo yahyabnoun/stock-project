@@ -7,17 +7,49 @@ session_start();
   $active = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "active", 0, 0, 0, 0);
   if (isset($_POST['submit'])) {
     extract($_POST);
-    $filename = $_FILES["image"]["name"];
-    $tempname = $_FILES["image"]["tmp_name"];
-    $image = "./image/client/" . $filename;
-
-    if (move_uploaded_file($tempname, $image)) {
-      $client = new Client($nom, $prenom, $adr, $tele, $email, $image);
-      $client->Ajouter("client");
-    } else {
-      exit("<h3> Failed to upload image!</h3>");
+    
+    // Server-side validation
+    $errors = [];
+    
+    // Check if all required fields are filled
+    if (empty($nom)) $errors[] = "First name is required";
+    if (empty($prenom)) $errors[] = "Last name is required";
+    if (empty($email)) $errors[] = "Email is required";
+    if (empty($tele)) $errors[] = "Phone number is required";
+    if (empty($adr)) $errors[] = "Address is required";
+    if (empty($_FILES["image"]["name"])) $errors[] = "Avatar image is required";
+    
+    // Email validation
+    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $errors[] = "Please enter a valid email address";
     }
+    
+    // Moroccan phone number validation
+    if (!empty($tele) && !preg_match('/^(\+212|0)[5-7][0-9]{8}$/', $tele)) {
+      $errors[] = "Please enter a valid Moroccan phone number (e.g., +212612345678 or 0612345678)";
+    }
+    
+    // If there are validation errors, display them
+    if (!empty($errors)) {
+      echo "<div class='alert alert-danger'><ul>";
+      foreach ($errors as $error) {
+        echo "<li>" . htmlspecialchars($error) . "</li>";
+      }
+      echo "</ul></div>";
+    } else {
+      // Proceed with file upload and client creation
+      $filename = $_FILES["image"]["name"];
+      $tempname = $_FILES["image"]["tmp_name"];
+      $image = "./image/client/" . $filename;
 
+      if (move_uploaded_file($tempname, $image)) {
+        $client = new Client($nom, $prenom, $adr, $tele, $email, $image);
+        $client->Ajouter("client");
+        echo "<div class='alert alert-success'>Customer added successfully!</div>";
+      } else {
+        echo "<div class='alert alert-danger'>Failed to upload image!</div>";
+      }
+    }
   }
 ?>
 <!DOCTYPE html>
@@ -85,39 +117,39 @@ session_start();
             <form class="row" method="post" action="addcustomer.php" enctype="multipart/form-data">
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Customer last name</label>
-                  <input type="text" name="prenom" />
+                  <label>Customer last name <span class="text-danger">*</span></label>
+                  <input type="text" name="prenom" required />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Customer first name</label>
-                  <input type="text" name="nom" />
+                  <label>Customer first name <span class="text-danger">*</span></label>
+                  <input type="text" name="nom" required />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>E-mail</label>
-                  <input type="text" name="email" />
+                  <label>E-mail <span class="text-danger">*</span></label>
+                  <input type="email" name="email" class="form-control" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address" />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Phone</label>
-                  <input type="text" name="tele" />
+                  <label>Phone <span class="text-danger">*</span></label>
+                  <input type="tel" name="tele" class="form-control" required pattern="^(\+212|0)[5-7][0-9]{8}$" title="Please enter a valid Moroccan phone number (e.g., +212612345678 or 0612345678)" />
                 </div>
               </div>
               <div class="col-lg-9 col-12">
                 <div class="form-group">
-                  <label>Address</label>
-                  <input type="text" name="adr" />
+                  <label>Address <span class="text-danger">*</span></label>
+                  <input type="text" name="adr" required />
                 </div>
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label> Avatar</label>
+                  <label> Avatar <span class="text-danger">*</span></label>
                   <div class="image-upload">
-                    <input type="file" name="image" />
+                    <input type="file" name="image" required accept="image/*" />
                     <div class="image-uploads">
                       <img src="assets/img/icons/upload.svg" alt="img" />
                       <h4>Drag and drop a file to upload</h4>
@@ -153,16 +185,83 @@ session_start();
   <script src="assets/plugins/sweetalert/sweetalerts.min.js"></script>
 
   <script src="assets/js/script.js"></script>
-</body>
-
-</html>
-<script src="assets/plugins/sweetalert/sweetalert2.all.min.js"></script>
-<script src="assets/plugins/sweetalert/sweetalerts.min.js"></script>
-
-<script src="assets/js/script.js"></script>
-</body>
-
-</html>
+  
+  <script>
+    // Client-side validation
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      const emailInput = document.querySelector('input[name="email"]');
+      const phoneInput = document.querySelector('input[name="tele"]');
+      
+      // Email validation function
+      function validateEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+      }
+      
+      // Moroccan phone validation function
+      function validateMoroccanPhone(phone) {
+        const phoneRegex = /^(\+212|0)[5-7][0-9]{8}$/;
+        return phoneRegex.test(phone);
+      }
+      
+      // Real-time email validation
+      emailInput.addEventListener('blur', function() {
+        const email = this.value.trim();
+        if (email && !validateEmail(email)) {
+          this.setCustomValidity('Please enter a valid email address');
+          this.reportValidity();
+        } else {
+          this.setCustomValidity('');
+        }
+      });
+      
+      // Real-time phone validation
+      phoneInput.addEventListener('blur', function() {
+        const phone = this.value.trim();
+        if (phone && !validateMoroccanPhone(phone)) {
+          this.setCustomValidity('Please enter a valid Moroccan phone number (e.g., +212612345678 or 0612345678)');
+          this.reportValidity();
+        } else {
+          this.setCustomValidity('');
+        }
+      });
+      
+      // Form submission validation
+      form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const errors = [];
+        
+        // Check all required fields
+        const requiredFields = form.querySelectorAll('input[required]');
+        requiredFields.forEach(function(field) {
+          if (!field.value.trim()) {
+            isValid = false;
+            errors.push(field.previousElementSibling.textContent.replace(' *', '') + ' is required');
+          }
+        });
+        
+        // Validate email
+        const email = emailInput.value.trim();
+        if (email && !validateEmail(email)) {
+          isValid = false;
+          errors.push('Please enter a valid email address');
+        }
+        
+        // Validate phone
+        const phone = phoneInput.value.trim();
+        if (phone && !validateMoroccanPhone(phone)) {
+          isValid = false;
+          errors.push('Please enter a valid Moroccan phone number (e.g., +212612345678 or 0612345678)');
+        }
+        
+        if (!isValid) {
+          e.preventDefault();
+          alert('Please fix the following errors:\n\n' + errors.join('\n'));
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

@@ -18,6 +18,9 @@ session_start();
     $all_sales = Sale::topSales();
     $all_purchases = Purchase::displayAllPur();
     $total_profit = Sale::totalProfit();
+    $recent_orders = Sale::displayRecentSales();
+    // Get only the 5 most recent orders
+    $recent_orders = array_slice($recent_orders, 0, 5);
     $total_all_sales = 0;
     foreach ($all_sales as $item) {
         $total_all_sales += $item['total'];
@@ -57,6 +60,113 @@ session_start();
     <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
 
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <style>
+        .recent-order {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+        .recent-order:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-processing {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .order-card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .order-amount {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+        .order-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .customer-name {
+            font-weight: 500;
+            margin: 0;
+        }
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .order-items {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .view-all-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .view-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .recent-orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .recent-orders-title {
+            color: #333;
+            font-weight: 600;
+            margin: 0;
+        }
+        .empty-orders {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        .empty-orders i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
 
 </head>
 
@@ -168,89 +278,99 @@ session_start();
                 </div>
 
                 <div class="row">
-                    <!-- <div class="col-lg-7 col-sm-12 col-12 d-flex">
-                        <div class="card flex-fill">
-                            <h4 class="card-title mb-0" style="padding:15px;">Top 4 Sales</h4>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Sale reference</th>
-                                        <th>Customer</th>
-                                        <th>Date</th>
-                                        <th>Grand Total (DH)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php for ($i = 0; $i <= 2; $i++): ?>
-                                    <tr>
-                                        <td><?= $all_sales[$i<=2]['num_com'] ?></td>
-                                        <td class="productimgname">
-                                            <a href="javascript:void(0);" class="product-img">
-                                                <img src="<?= $all_sales[$i]['image'] ?>" alt="product" />
-                                            </a>
-                                            <a href="javascript:void(0);"><?= $all_sales[$i]['nom'] . " " . $all_sales[$i]['prenom'] ?></a>
-                                        </td>
-                                        <td><?= $all_sales[$i]['date_com'] ?></td>
-                                        <td><?= $all_sales[$i]['total'] ?></td>
-                                    </tr>
-                                    <?php endfor ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-lg-5 col-sm-12 col-12 d-flex">
-                        <div class="card flex-fill">
-                            <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h4 class="card-title mb-0">Recently Added Products</h4>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false"
-                                        class="dropset">
-                                        <i class="fa fa-ellipsis-v"></i>
+                    <!-- Recent Orders Section -->
+                    <div class="col-lg-8 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="recent-orders-header">
+                                    <h5 class="recent-orders-title">
+                                        <i class="fas fa-history"></i> Recent Orders
+                                    </h5>
+                                    <a href="salesreturnlists.php" class="btn btn-sm view-all-btn">
+                                        View All Orders
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li>
-                                            <a href="productlist.php" class="dropdown-item">Product List</a>
-                                        </li>
-                                        <li>
-                                            <a href="addproduct.php" class="dropdown-item">Add Product</a>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="table-responsive dataview">
-                                    <table class="table datatable ">
-                                        <thead>
-                                            <tr>
-                                                <th>Sno</th>
-                                                <th>Products</th>
-                                                <th>Price</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                                $j = 0;
-                                                for ($i = sizeof($products) - 1; $i >= sizeof($products) - 4; $i--):
-                                                    $j++;
-                                            ?>
-                                            <tr>
-                                                <td><?= $j; ?></td>
-                                                <td class="productimgname">
-                                                    <a href="productlist.php" class="product-img">
-                                                        <img src="<?= $products[$i]['pr_image'] ?>" alt="product">
-                                                    </a>
-                                                    <a href="productlist.php"><?= $products[$i]['lib_pr'] ?></a>
-                                                </td>
-                                                <td><?= $products[$i]['prix_uni'] ?>DH</td>
-                                            </tr>
-                                            <?php endfor ?>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <?php if (empty($recent_orders)): ?>
+                                    <div class="empty-orders">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <h5>No orders yet</h5>
+                                        <p>Orders will appear here once customers start making purchases.</p>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($recent_orders as $order): ?>
+                                        <div class="recent-order">
+                                            <div class="order-card-header">
+                                                <div class="customer-info">
+                                                    <img src="<?= htmlspecialchars($order['image']) ?>" 
+                                                         alt="Customer" class="customer-avatar">
+                                                    <div>
+                                                        <h6 class="customer-name">
+                                                            <?= htmlspecialchars($order['nom'] . ' ' . $order['prenom']) ?>
+                                                        </h6>
+                                                        <small class="order-date">
+                                                            <i class="fas fa-calendar"></i> 
+                                                            <?= date('M j, Y g:i A', strtotime($order['date_com'])) ?>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <span class="order-status status-pending">Pending</span>
+                                            </div>
+                                            
+                                            <div class="order-details">
+                                                <div>
+                                                    <strong>Order #<?= htmlspecialchars($order['num_com']) ?></strong>
+                                                    <div class="order-items">
+                                                        <i class="fas fa-box"></i> Multiple items
+                                                    </div>
+                                                </div>
+                                                <div class="order-amount">
+                                                    <?= number_format($order['total'], 2) ?> DH
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                </div> -->
+                    
+                    <!-- Top Sales Section -->
+                    <div class="col-lg-4 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-trophy"></i> Top Sales
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <?php if (!empty($all_sales)): ?>
+                                    <?php for ($i = 0; $i < min(3, count($all_sales)); $i++): ?>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="flex-shrink-0">
+                                                <img src="<?= htmlspecialchars($all_sales[$i]['image']) ?>" 
+                                                     alt="Customer" class="customer-avatar">
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6 class="mb-1"><?= htmlspecialchars($all_sales[$i]['nom'] . ' ' . $all_sales[$i]['prenom']) ?></h6>
+                                                <small class="text-muted">Order #<?= htmlspecialchars($all_sales[$i]['num_com']) ?></small>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong class="order-amount"><?= number_format($all_sales[$i]['total'], 2) ?> DH</strong>
+                                            </div>
+                                        </div>
+                                    <?php endfor; ?>
+                                <?php else: ?>
+                                    <div class="text-center py-3">
+                                        <i class="fas fa-chart-line fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted">No sales data available</p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- <div class="card mb-0">
                     <div class="card-body">
                         <h4 class="card-title">Least Quantity in Stock</h4>

@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Set timezone to Casablanca, Morocco
+date_default_timezone_set('Africa/Casablanca');
+
 // Check if client is logged in
 if (!isset($_SESSION['client']) || $_SESSION['user_type'] !== 'client') {
     header("Location: ../signin.php");
@@ -136,7 +139,7 @@ $active = array(0, 0, 0, 0);
                             <h5 class="mb-3"><i class="fas fa-credit-card"></i> Payment Information</h5>
                             <form id="checkout-form">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group mb-3">
                                             <label for="payment_method">Payment Method</label>
                                             <select class="form-control" id="payment_method" name="payment_method" required>
@@ -145,13 +148,6 @@ $active = array(0, 0, 0, 0);
                                                 <option value="card">Credit/Debit Card</option>
                                                 <option value="bank_transfer">Bank Transfer</option>
                                             </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-3">
-                                            <label for="delivery_date">Preferred Delivery Date</label>
-                                            <input type="date" class="form-control" id="delivery_date" name="delivery_date" 
-                                                   min="<?= date('Y-m-d', strtotime('+1 day')) ?>" required>
                                         </div>
                                     </div>
                                 </div>
@@ -231,11 +227,6 @@ $active = array(0, 0, 0, 0);
                 return;
             }
             
-            if (!formData.get('delivery_date')) {
-                alert('Please select a delivery date.');
-                return;
-            }
-            
             // Confirm order
             if (!confirm('Are you sure you want to place this order?')) {
                 return;
@@ -244,7 +235,6 @@ $active = array(0, 0, 0, 0);
             // Prepare order data
             const orderData = {
                 payment_method: formData.get('payment_method'),
-                delivery_date: formData.get('delivery_date'),
                 notes: formData.get('notes'),
                 cart_data: <?= json_encode($cart_data) ?>,
                 subtotal: <?= $subtotal ?>,
