@@ -11,27 +11,60 @@ session_start();
   $active = array(0, 0, 0, 0, 0, 0, "active", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   if (isset($_POST['add'])) {
     extract($_POST);
-    // Basic server-side validation and casting for numeric fields
-    $id_cat = isset($id_cat) && $id_cat !== '' ? (int)$id_cat : null;
-    $id_marque = isset($id_marque) && $id_marque !== '' ? (int)$id_marque : null;
-    $qte_stock = isset($qte_stock) && $qte_stock !== '' ? (int)$qte_stock : null;
-    $prix_achat = isset($prix_achat) && $prix_achat !== '' ? (float)str_replace(',', '.', $prix_achat) : null;
-    $prix_uni = isset($prix_uni) && $prix_uni !== '' ? (float)str_replace(',', '.', $prix_uni) : null;
-
-    // Guard against invalid numeric inputs
-    if ($id_cat === null || $id_marque === null || $qte_stock === null || $prix_achat === null || $prix_uni === null) {
-      exit('<h3> Please fill valid numeric values for Category, Brand, Quantity, Purchase and Unit prices.</h3>');
+    
+    // Server-side validation
+    $errors = [];
+    
+    // Check if all required fields are filled
+    if (empty($num_pr)) $errors[] = "Product reference is required";
+    if (empty($lib_pr)) $errors[] = "Product name is required";
+    if (empty($id_cat)) $errors[] = "Category is required";
+    if (empty($id_marque)) $errors[] = "Brand is required";
+    if (empty($qte_stock)) $errors[] = "Quantity is required";
+    if (empty($prix_achat)) $errors[] = "Purchase price is required";
+    if (empty($prix_uni)) $errors[] = "Unit price is required";
+    if (empty($_FILES["image"]["name"])) $errors[] = "Product image is required";
+    
+    // Numeric validation
+    if (!empty($qte_stock) && (!is_numeric($qte_stock) || $qte_stock < 0)) {
+      $errors[] = "Quantity must be a positive number";
     }
-
-    $filename = $_FILES["image"]["name"];
-    $tempname = $_FILES["image"]["tmp_name"];
-    $image = "./image/product/" . $filename;
-
-    if (move_uploaded_file($tempname, $image)) {
-      $nv_pr = new Product($num_pr, $id_cat, $id_marque, $lib_pr, $desc_pr, $prix_uni, $prix_achat, $qte_stock, $image);
-      $nv_pr->addPr();
+    
+    if (!empty($prix_achat) && (!is_numeric($prix_achat) || $prix_achat <= 0)) {
+      $errors[] = "Purchase price must be a positive number";
+    }
+    
+    if (!empty($prix_uni) && (!is_numeric($prix_uni) || $prix_uni <= 0)) {
+      $errors[] = "Unit price must be a positive number";
+    }
+    
+    // Price validation - unit price should be higher than purchase price
+    if (!empty($prix_achat) && !empty($prix_uni) && is_numeric($prix_achat) && is_numeric($prix_uni)) {
+      if ($prix_uni <= $prix_achat) {
+        $errors[] = "Unit price must be higher than purchase price";
+      }
+    }
+    
+    // If there are validation errors, display them
+    if (!empty($errors)) {
+      echo "<div class='alert alert-danger'><ul>";
+      foreach ($errors as $error) {
+        echo "<li>" . htmlspecialchars($error) . "</li>";
+      }
+      echo "</ul></div>";
     } else {
-      exit("<h3> Failed to upload image!</h3>");
+      // Proceed with file upload and product creation
+      $filename = $_FILES["image"]["name"];
+      $tempname = $_FILES["image"]["tmp_name"];
+      $image = "./image/product/" . $filename;
+
+      if (move_uploaded_file($tempname, $image)) {
+        $nv_pr = new Product($num_pr, $id_cat, $id_marque, $lib_pr, $desc_pr, $prix_uni, $prix_achat, $qte_stock, $image);
+        $nv_pr->addPr();
+        echo "<div class='alert alert-success'>Product added successfully!</div>";
+      } else {
+        echo "<div class='alert alert-danger'>Failed to upload image!</div>";
+      }
     }
   }
 ?>
@@ -87,20 +120,20 @@ session_start();
             <form class="row" method="post" action="addproduct.php" enctype="multipart/form-data">
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Reference</label>
-                  <input type="text" name="num_pr" />
+                  <label>Reference <span class="text-danger">*</span></label>
+                  <input type="text" name="num_pr" class="form-control" required />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Product Name</label>
-                  <input type="text" name="lib_pr" />
+                  <label>Product Name <span class="text-danger">*</span></label>
+                  <input type="text" name="lib_pr" class="form-control" required />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Category</label>
-                  <select class="select" name="id_cat">
+                  <label>Category <span class="text-danger">*</span></label>
+                  <select class="select" name="id_cat" required>
                     <option value="">Choose Category</option>
                     <?php foreach ($cats as $item): ?>
                     <option value="<?= $item['id_cat']; ?>">
@@ -112,8 +145,8 @@ session_start();
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Brand</label>
-                  <select class="select" name="id_marque">
+                  <label>Brand <span class="text-danger">*</span></label>
+                  <select class="select" name="id_marque" required>
                     <option value="">Choose Brand</option>
                     <?php foreach ($brands as $item): ?>
                     <option value="<?= $item['id_marque']; ?>">
@@ -125,34 +158,34 @@ session_start();
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Quantity</label>
-                  <input type="text" name="qte_stock" />
+                  <label>Quantity <span class="text-danger">*</span></label>
+                  <input type="number" name="qte_stock" class="form-control" min="0" step="1" required />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>purchase price</label>
-                  <input type="text" name="prix_achat" />
+                  <label>Purchase Price (DH) <span class="text-danger">*</span></label>
+                  <input type="number" name="prix_achat" class="form-control" min="0" step="0.01" required />
                 </div>
               </div>
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>unit price</label>
-                  <input type="text" name="prix_uni" />
+                  <label>Unit Price (DH) <span class="text-danger">*</span></label>
+                  <input type="number" name="prix_uni" class="form-control" min="0" step="0.01" required />
                 </div>
               </div>
 
               <div class="col-lg-3 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>description</label>
-                  <input type="text" name="desc_pr" />
+                  <label>Description</label>
+                  <input type="text" name="desc_pr" class="form-control" />
                 </div>
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label> Product Image</label>
+                  <label> Product Image <span class="text-danger">*</span></label>
                   <div class="image-upload">
-                    <input type="file" name="image" />
+                    <input type="file" name="image" required accept="image/*" />
                     <div class="image-uploads">
                       <img src="assets/img/icons/upload.svg" alt="img" />
                       <h4>Drag and drop a file to upload</h4>
@@ -188,6 +221,91 @@ session_start();
   <script src="assets/plugins/sweetalert/sweetalerts.min.js"></script>
 
   <script src="assets/js/script.js"></script>
+  
+  <script>
+    // Client-side validation
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      const purchasePriceInput = document.querySelector('input[name="prix_achat"]');
+      const unitPriceInput = document.querySelector('input[name="prix_uni"]');
+      const quantityInput = document.querySelector('input[name="qte_stock"]');
+      
+      // Price validation function
+      function validatePrices() {
+        const purchasePrice = parseFloat(purchasePriceInput.value) || 0;
+        const unitPrice = parseFloat(unitPriceInput.value) || 0;
+        
+        if (purchasePrice > 0 && unitPrice > 0 && unitPrice <= purchasePrice) {
+          unitPriceInput.setCustomValidity('Unit price must be higher than purchase price');
+          return false;
+        } else {
+          unitPriceInput.setCustomValidity('');
+          return true;
+        }
+      }
+      
+      // Real-time price validation
+      purchasePriceInput.addEventListener('input', validatePrices);
+      unitPriceInput.addEventListener('input', validatePrices);
+      
+      // Quantity validation
+      quantityInput.addEventListener('input', function() {
+        const quantity = parseInt(this.value) || 0;
+        if (quantity < 0) {
+          this.setCustomValidity('Quantity must be a positive number');
+        } else {
+          this.setCustomValidity('');
+        }
+      });
+      
+      // Form submission validation
+      form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const errors = [];
+        
+        // Check all required fields
+        const requiredFields = form.querySelectorAll('input[required], select[required]');
+        requiredFields.forEach(function(field) {
+          if (!field.value.trim()) {
+            isValid = false;
+            const label = field.previousElementSibling.textContent.replace(' *', '');
+            errors.push(label + ' is required');
+          }
+        });
+        
+        // Validate prices
+        if (!validatePrices()) {
+          isValid = false;
+          errors.push('Unit price must be higher than purchase price');
+        }
+        
+        // Validate numeric fields
+        const purchasePrice = parseFloat(purchasePriceInput.value) || 0;
+        const unitPrice = parseFloat(unitPriceInput.value) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
+        
+        if (purchasePrice <= 0) {
+          isValid = false;
+          errors.push('Purchase price must be greater than 0');
+        }
+        
+        if (unitPrice <= 0) {
+          isValid = false;
+          errors.push('Unit price must be greater than 0');
+        }
+        
+        if (quantity < 0) {
+          isValid = false;
+          errors.push('Quantity must be a positive number');
+        }
+        
+        if (!isValid) {
+          e.preventDefault();
+          alert('Please fix the following errors:\n\n' + errors.join('\n'));
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

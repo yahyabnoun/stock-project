@@ -7,14 +7,34 @@ session_start();
   $active = array(0, 0, 0, 0, "active", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   if (isset($_POST['add'])) {
     extract($_POST);
-    $filename = $_FILES["image"]["name"];
-    $tempname = $_FILES["image"]["tmp_name"];
-    $image = "./image/category/" . $filename;
-    if (move_uploaded_file($tempname, $image)) {
-      $cat = new Categorie($lib_cat, $desc_cat, $image);
-      $cat->ajouterCat();
+    
+    // Server-side validation
+    $errors = [];
+    
+    // Check if all required fields are filled
+    if (empty($lib_cat)) $errors[] = "Category name is required";
+    if (empty($_FILES["image"]["name"])) $errors[] = "Category image is required";
+    
+    // If there are validation errors, display them
+    if (!empty($errors)) {
+      echo "<div class='alert alert-danger'><ul>";
+      foreach ($errors as $error) {
+        echo "<li>" . htmlspecialchars($error) . "</li>";
+      }
+      echo "</ul></div>";
     } else {
-      exit("<h3> Failed to upload image!</h3>");
+      // Proceed with file upload and category creation
+      $filename = $_FILES["image"]["name"];
+      $tempname = $_FILES["image"]["tmp_name"];
+      $image = "./image/category/" . $filename;
+      
+      if (move_uploaded_file($tempname, $image)) {
+        $cat = new Categorie($lib_cat, $desc_cat, $image);
+        $cat->ajouterCat();
+        echo "<div class='alert alert-success'>Category added successfully!</div>";
+      } else {
+        echo "<div class='alert alert-danger'>Failed to upload image!</div>";
+      }
     }
   }
 ?>
@@ -71,8 +91,8 @@ session_start();
             <form class="row" method="post" action="addcategory.php" enctype="multipart/form-data">
               <div class="col-lg-6 col-sm-6 col-12">
                 <div class="form-group">
-                  <label>Category Name</label>
-                  <input type="text" name="lib_cat" />
+                  <label>Category Name <span class="text-danger">*</span></label>
+                  <input type="text" name="lib_cat" class="form-control" required />
                 </div>
               </div>
               <div class="col-lg-12">
@@ -83,9 +103,9 @@ session_start();
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label> Product Image</label>
+                  <label> Product Image <span class="text-danger">*</span></label>
                   <div class="image-upload">
-                    <input type="file" name="image" accept="image/png, image/jpeg" />
+                    <input type="file" name="image" accept="image/*" required />
                     <div class="image-uploads">
                       <img src="assets/img/icons/upload.svg" alt="img" />
                       <h4>Drag and drop a file to upload</h4>
